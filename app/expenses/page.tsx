@@ -20,13 +20,13 @@ export default function ExpensesPage() {
   const itemsPerPage = 10;
 
   // Generate 25 sample expenses
-  const generateSampleExpenses = (): Expense[] => {
+  const generateExpenses = (): Expense[] => {
     const categories = ["Food", "Travel", "Shopping", "Bills", "Entertainment"];
-    const sample: Expense[] = [];
+    const Expenses: Expense[] = [];
     for (let i = 1; i <= 25; i++) {
-      sample.push({
+      Expenses.push({
         id: i.toString(),
-        title: `Sample Expense ${i}`,
+        title: `Expense ${i}`,
         amount: parseFloat((Math.random() * 100 + 1).toFixed(2)),
         category: categories[i % categories.length],
         date: new Date(
@@ -36,7 +36,7 @@ export default function ExpensesPage() {
           .split("T")[0],
       });
     }
-    return sample;
+    return Expenses;
   };
 
   // Load expenses from localStorage or generate sample data
@@ -45,9 +45,9 @@ export default function ExpensesPage() {
     if (data) {
       setExpenses(JSON.parse(data) as Expense[]);
     } else {
-      const sampleExpenses = generateSampleExpenses();
-      setExpenses(sampleExpenses);
-      localStorage.setItem("expenses", JSON.stringify(sampleExpenses));
+      const Expenses = generateExpenses();
+      setExpenses(Expenses);
+      localStorage.setItem("expenses", JSON.stringify(Expenses));
     }
   }, []);
 
