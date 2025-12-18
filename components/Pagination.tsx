@@ -1,17 +1,20 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  baseUrl?: string; // optional base URL for linking pages
+  onPageChange?: (page: number) => void; // fallback callback if no baseUrl
 }
 
 export default function Pagination({
   currentPage,
   totalPages,
+  baseUrl = "",
   onPageChange,
 }: PaginationProps) {
   if (totalPages <= 1) return null;
@@ -48,61 +51,101 @@ export default function Pagination({
 
   const visiblePages = getVisiblePages();
 
+  const renderPageItem = (page: number | string, index: number) => {
+    if (page === "...") {
+      return (
+        <span key={index} className="px-3 py-1 text-gray-400 select-none">
+          ...
+        </span>
+      );
+    }
+
+    const pageNumber = page as number;
+    const href = baseUrl ? `${baseUrl}?page=${pageNumber}` : "#";
+
+    return baseUrl ? (
+      <Link
+        key={index}
+        href={href}
+        className={`px-3 py-1 rounded-md border ${
+          pageNumber === currentPage
+            ? "bg-purple-600 text-white border-purple-600"
+            : "text-gray-700 border-gray-200 hover:bg-gray-50"
+        }`}
+      >
+        {pageNumber}
+      </Link>
+    ) : (
+      <button
+        key={index}
+        onClick={() => onPageChange && onPageChange(pageNumber)}
+        className={`px-3 py-1 rounded-md border ${
+          pageNumber === currentPage
+            ? "bg-purple-600 text-white border-purple-600"
+            : "text-gray-700 border-gray-200 hover:bg-gray-50"
+        }`}
+      >
+        {pageNumber}
+      </button>
+    );
+  };
+
   return (
     <nav className="flex items-center justify-center gap-2 mt-4">
       {/* Previous */}
-      <button
-        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-        disabled={currentPage === 1}
-        className={`flex items-center gap-1 px-3 py-1 rounded-md border ${
-          currentPage === 1
-            ? "text-gray-400 border-gray-200 cursor-not-allowed"
-            : "text-purple-600 border-purple-200 hover:bg-purple-50"
-        }`}
-      >
-        <ChevronLeft className="w-4 h-4" />
-        Previous
-      </button>
-
-      {/* Page Numbers */}
-      {visiblePages.map((page, index) =>
-        page === "..." ? (
-          <span
-            key={index}
-            className="px-3 py-1 text-gray-400 select-none"
-          >
-            ...
-          </span>
-        ) : (
-          <button
-            key={index}
-            onClick={() => onPageChange(page as number)}
-            className={`px-3 py-1 rounded-md border ${
-              page === currentPage
-                ? "bg-purple-600 text-white border-purple-600"
-                : "text-gray-700 border-gray-200 hover:bg-gray-50"
-            }`}
-          >
-            {page}
-          </button>
-        )
+      {baseUrl ? (
+        <Link
+          href={`${baseUrl}?page=${Math.max(1, currentPage - 1)}`}
+          className={`flex items-center gap-1 px-3 py-1 rounded-md border ${
+            currentPage === 1
+              ? "text-gray-400 border-gray-200 cursor-not-allowed pointer-events-none"
+              : "text-purple-600 border-purple-200 hover:bg-purple-50"
+          }`}
+        >
+          <ChevronLeft className="w-4 h-4" /> Previous
+        </Link>
+      ) : (
+        <button
+          onClick={() => onPageChange && onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+          className={`flex items-center gap-1 px-3 py-1 rounded-md border ${
+            currentPage === 1
+              ? "text-gray-400 border-gray-200 cursor-not-allowed"
+              : "text-purple-600 border-purple-200 hover:bg-purple-50"
+          }`}
+        >
+          <ChevronLeft className="w-4 h-4" /> Previous
+        </button>
       )}
 
+      {/* Page Numbers */}
+      {visiblePages.map((page, index) => renderPageItem(page, index))}
+
       {/* Next */}
-      <button
-        onClick={() =>
-          onPageChange(Math.min(totalPages, currentPage + 1))
-        }
-        disabled={currentPage === totalPages}
-        className={`flex items-center gap-1 px-3 py-1 rounded-md border ${
-          currentPage === totalPages
-            ? "text-gray-400 border-gray-200 cursor-not-allowed"
-            : "text-purple-600 border-purple-200 hover:bg-purple-50"
-        }`}
-      >
-        Next
-        <ChevronRight className="w-4 h-4" />
-      </button>
+      {baseUrl ? (
+        <Link
+          href={`${baseUrl}?page=${Math.min(totalPages, currentPage + 1)}`}
+          className={`flex items-center gap-1 px-3 py-1 rounded-md border ${
+            currentPage === totalPages
+              ? "text-gray-400 border-gray-200 cursor-not-allowed pointer-events-none"
+              : "text-purple-600 border-purple-200 hover:bg-purple-50"
+          }`}
+        >
+          Next <ChevronRight className="w-4 h-4" />
+        </Link>
+      ) : (
+        <button
+          onClick={() => onPageChange && onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}
+          className={`flex items-center gap-1 px-3 py-1 rounded-md border ${
+            currentPage === totalPages
+              ? "text-gray-400 border-gray-200 cursor-not-allowed"
+              : "text-purple-600 border-purple-200 hover:bg-purple-50"
+          }`}
+        >
+          Next <ChevronRight className="w-4 h-4" />
+        </button>
+      )}
     </nav>
   );
 }

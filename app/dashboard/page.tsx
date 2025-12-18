@@ -1,5 +1,5 @@
 "use client"; 
-import React from "react";
+
 import Sidebar from "@/components/Sidebar";
 import ProductsChart from "@/components/Products-chart";
 import { TrendingUpIcon } from "lucide-react";

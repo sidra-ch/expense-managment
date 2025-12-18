@@ -13,6 +13,7 @@ export default function Sidebar({
         {name: "Add-Product" , href: "/add-product", icon: Plus},
         {name: "Inventory" , href: "/inventory", icon: Package},
         {name: "Categories" , href: "/categories", icon: Layers2 },
+        {name: "Expenses" , href: "/expenses", icon: Layers2 },
         {name: "Settings" , href: "/settings", icon: Settings}
     ];
     return <div className="fixed left-0 top-0 bg-gray-900 text-white w-64 min-h-screen p-6 z-10">
