@@ -2,8 +2,8 @@
 
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
-import { useState } from "react";
-import Pagination from "@/components/Pagination";
+import { useEffect, useState } from "react";
+import Pagination from "@/components/Pagination"; // <- import your new Pagination component
 
 export type Expense = {
   id: string;
@@ -14,14 +14,17 @@ export type Expense = {
 };
 
 export default function ExpensesPage() {
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Generate 25 sample expenses
   const generateExpenses = (): Expense[] => {
     const categories = ["Food", "Travel", "Shopping", "Bills", "Entertainment"];
-    const expensesList: Expense[] = [];
+    const expense: Expense[] = [];
     for (let i = 1; i <= 25; i++) {
-      expensesList.push({
+      expense.push({
         id: i.toString(),
         title: `Expense ${i}`,
         amount: parseFloat((Math.random() * 100 + 1).toFixed(2)),
@@ -33,23 +36,20 @@ export default function ExpensesPage() {
           .split("T")[0],
       });
     }
-    return expensesList;
+    return expense;
   };
 
-  // Lazy state initialization: load from localStorage or generate sample data
-  const [expenses, setExpenses] = useState<Expense[]>(() => {
+  // Load expenses from localStorage or generate sample data
+  useEffect(() => {
     const data = localStorage.getItem("expenses");
     if (data) {
-      return JSON.parse(data) as Expense[];
+      setExpenses(JSON.parse(data) as Expense[]);
     } else {
-      const generated = generateExpenses();
-      localStorage.setItem("expenses", JSON.stringify(generated));
-      return generated;
+      const sampleExpenses = generateExpenses();
+      setExpenses(sampleExpenses);
+      localStorage.setItem("expenses", JSON.stringify(sampleExpenses));
     }
-  });
-
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  }, []);
 
   // Filter expenses by search term
   const filtered = expenses.filter((e) =>
